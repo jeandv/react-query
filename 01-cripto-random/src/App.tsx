@@ -1,33 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useRandom } from './hooks/useRandom';
 import './App.css';
-
-const API = 'https://www.random.org/integers/?num=1&min=1&max=500&col=1&base=10&format=plain&rnd=new';
-
-const getRandomNumberFromApi = async (): Promise<number> => {
-
-  // try {
-
-  const res = await fetch(API);
-
-  const numberString = await res.text();
-
-  return +numberString;
-
-  // } catch (err) {
-
-  // console.log(`Error al obtener el número: ${err}`);
-  // throw new Error('Error al obtener el número!');
-
-  // }
-
-}
 
 export const App = () => {
 
-  const query = useQuery(
-    ['randomQuery'],
-    getRandomNumberFromApi
-  );
+  const query = useRandom();
 
   return (
     <div className='App'>

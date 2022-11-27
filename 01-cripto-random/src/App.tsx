@@ -1,34 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useEffect, useReducer, useState } from 'react';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+const API = 'https://www.random.org/integers/?num=1&min=1&max=500&col=1&base=10&format=plain&rnd=new';
+
+const getRandomNumberFromApi = async (): Promise<number> => {
+
+  try {
+
+    const res = await fetch(API);
+
+    const numberString = await res.text();
+
+    return +numberString;
+
+  } catch (err) {
+
+    console.log(`Error al obtener el número: ${err}`);
+    throw new Error('Error al obtener el número!');
+
+  }
+
+}
+
+export const App = () => {
+  const [number, setNumber] = useState<number>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>();
+  const [key, forceRefetch] = useReducer((x) => x + 1, 0);
+
+  useEffect(() => {
+
+    setIsLoading(true);
+
+    getRandomNumberFromApi()
+      .then(numApi => setNumber(numApi))
+      .catch(err => setError(err.message));
+
+  }, [key]);
+
+  useEffect(() => { if (number) setIsLoading(false); }, [number]);
+
+  useEffect(() => { if (error) setIsLoading(false); }, [error]);
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div className='App'>
+
+      {
+        isLoading
+          ? <h2>Cargando...</h2>
+          : <h2>Número aleatorio: {number}</h2>
+      }
+
+      {!isLoading && error && <h2>{error}</h2>}
+
+      <button onClick={forceRefetch} disabled={isLoading}>
+        {
+          isLoading ? '...' : 'Nuevo número'
+        }
+      </button>
+
     </div>
   )
 }
-
-export default App

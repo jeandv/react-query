@@ -1,61 +1,48 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import './App.css';
 
 const API = 'https://www.random.org/integers/?num=1&min=1&max=500&col=1&base=10&format=plain&rnd=new';
 
 const getRandomNumberFromApi = async (): Promise<number> => {
 
-  try {
+  // try {
 
-    const res = await fetch(API);
+  const res = await fetch(API);
 
-    const numberString = await res.text();
+  const numberString = await res.text();
 
-    return +numberString;
+  return +numberString;
 
-  } catch (err) {
+  // } catch (err) {
 
-    console.log(`Error al obtener el número: ${err}`);
-    throw new Error('Error al obtener el número!');
+  // console.log(`Error al obtener el número: ${err}`);
+  // throw new Error('Error al obtener el número!');
 
-  }
+  // }
 
 }
 
 export const App = () => {
-  const [number, setNumber] = useState<number>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>();
-  const [key, forceRefetch] = useReducer((x) => x + 1, 0);
 
-  useEffect(() => {
-
-    setIsLoading(true);
-
-    getRandomNumberFromApi()
-      .then(numApi => setNumber(numApi))
-      .catch(err => setError(err.message));
-
-  }, [key]);
-
-  useEffect(() => { if (number) setIsLoading(false); }, [number]);
-
-  useEffect(() => { if (error) setIsLoading(false); }, [error]);
+  const query = useQuery(
+    ['randomQuery'],
+    getRandomNumberFromApi
+  );
 
   return (
     <div className='App'>
 
       {
-        isLoading
+        query.isFetching
           ? <h2>Cargando...</h2>
-          : <h2>Número aleatorio: {number}</h2>
+          : <h2>Número aleatorio: {query.data}</h2>
       }
 
-      {!isLoading && error && <h2>{error}</h2>}
+      {!query.isLoading && query.isError && <h2>{`${query.error}`}</h2>}
 
-      <button onClick={forceRefetch} disabled={isLoading}>
+      <button onClick={() => query.refetch()} disabled={query.isFetching}>
         {
-          isLoading ? '...' : 'Nuevo número'
+          query.isFetching ? '...' : 'Nuevo número'
         }
       </button>
 

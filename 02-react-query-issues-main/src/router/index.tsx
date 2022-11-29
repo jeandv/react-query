@@ -8,9 +8,9 @@ export const router = createBrowserRouter([
     path: '/issues',
     element: <GitApp />,
     children: [
-        { path: 'list', element: <ListView />,  },
-        { path: 'issue/:id', element: <IssueView /> },
-        { path: '*', element: <Navigate to="list" /> },
+      { path: 'list', element: <ListView />, },
+      { path: 'issue/:id', element: <IssueView /> },
+      { path: '*', element: <Navigate to="list" /> },
     ]
   },
   {
@@ -22,4 +22,3 @@ export const router = createBrowserRouter([
     element: <h1>Not found</h1>,
   },
 ]);
-

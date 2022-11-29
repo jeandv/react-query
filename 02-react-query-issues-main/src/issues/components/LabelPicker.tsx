@@ -1,33 +1,32 @@
-import { useQuery } from '@tanstack/react-query';
+import { FC } from 'react';
+import { FaSpinner } from 'react-icons/fa';
+import { useLabels } from '../hooks/useLabels';
 
-const API_LABELS = 'https://api.github.com/repos/facebook/react/labels'
-
-const getLabels = async () => {
-
-  const res = await fetch(API_LABELS);
-
-  const data = await res.json();
-  console.log(data)
-  return data;
-
+interface LabelPickerProps {
+  selectedLabels: string[];
+  onChange: (labelName: string) => void;
 }
 
-export const LabelPicker = () => {
+export const LabelPicker: FC<LabelPickerProps> = ({ selectedLabels, onChange }) => {
 
-  const labelsQuery = useQuery(
-    ['labels'],
-    getLabels
-  );
+  const labelsQuery = useLabels();
+
+  if (labelsQuery.isLoading) return <FaSpinner className='loader' />;
 
   return (
     <div>
-      <span
-        className='badge rounded-pill m-1 label-picker'
-        style={{ border: `1px solid #ffccd3`, color: '#ffccd3' }}
-      >
-        Primary
-      </span>
-
+      {
+        labelsQuery.data?.map(({ id, name, color }) => (
+          <span
+            className={`badge rounded-pill m-1 label-picker ${selectedLabels.includes(name) ? 'label-active' : ''}`}
+            key={id}
+            style={{ border: `1px solid #${color}`, color: `${color}` }}
+            onClick={() => onChange(name)}
+          >
+            {name}
+          </span>
+        ))
+      }
     </div>
   )
 }

@@ -7,7 +7,11 @@ const getLabels = async (): Promise<Label[]> => {
 
   await sleep(2);
 
-  const { data } = await githubApi.get<Label[]>('/labels');
+  const { data } = await githubApi.get<Label[]>('/labels?per_page=100', {
+    headers: {
+      Authorization: null
+    }
+  });
 
   return data;
 }
@@ -18,7 +22,7 @@ export const useLabels = () => {
     ['labels'],
     getLabels,
     {
-      // staleTime: 1000 * 60 * 60,
+      staleTime: 1000 * 60 * 60,
       // initialData: [],
       placeholderData: [
         {
@@ -41,6 +45,6 @@ export const useLabels = () => {
     }
   );
 
-
   return labelsQuery;
+
 }

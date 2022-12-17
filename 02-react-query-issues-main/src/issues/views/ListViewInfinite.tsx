@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { FaSpinner } from 'react-icons/fa';
 import { IssueList } from '../components/IssueList';
 import { LabelPicker } from '../components/LabelPicker';
-import { useIssues } from '../hooks';
+import { useIssuesInfinite } from '../hooks';
 import { State } from '../interfaces';
 
-export const ListView = () => {
+export const ListViewInfinite = () => {
 
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [state, setState] = useState<State>();
 
-  const { issuesQuery, page, nextPage, prevPage } = useIssues({ state, labels: selectedLabels });
+  const { issuesQuery } = useIssuesInfinite({ state, labels: selectedLabels });
 
   const onLabelChange = (labelName: string) => {
 
@@ -27,27 +27,17 @@ export const ListView = () => {
           issuesQuery.isLoading
             ? <FaSpinner className='loader' />
             : <IssueList
-              issues={issuesQuery.data || []}
+              issues={issuesQuery.data?.pages.flat() || []}
               state={state}
               onStateChanged={(newState) => setState(newState)} />
         }
 
-        <div className='d-flex mt-2 justify-content-around align-items-center'>
-          <button
-            className='btn btn-outline-primary'
-            disabled={issuesQuery.isFetching}
-            onClick={prevPage}
-          >
-            Prev
-          </button>
-          <span>{page}</span>
-          <button
-            className='btn btn-outline-primary'
-            disabled={issuesQuery.isFetching}
-            onClick={nextPage}>
-            Next
-          </button>
-        </div>
+        <button
+          className='btn btn-outline-primary mt-3'
+          disabled={!issuesQuery.hasNextPage}
+          onClick={() => issuesQuery.fetchNextPage()}>
+          Load More...
+        </button>
 
       </div>
 

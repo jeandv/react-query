@@ -18,7 +18,7 @@ export const NavBar = () => {
     <Navbar>
       <NavbarBrand>
         <AcmeLogo />
-        <p className="font-bold text-inherit">JEAN</p>
+        <p className="font-bold text-inherit">JEAN RONDÓN</p>
       </NavbarBrand>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">

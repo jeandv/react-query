@@ -4,9 +4,28 @@ interface GetProductsOptions {
   filterKey?: string;
 }
 
-export const getProducts = async ({ filterKey }: GetProductsOptions) => {
+const sleep = (seconds: number = 0): Promise<boolean> => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(true)
+    }, seconds * 1000)
+  })
+}
 
-  const { data } = await productsApi.get<Product[]>('/products');
+export const getProducts = async ({ filterKey }: GetProductsOptions): Promise<Product[]> => {
+
+  //await sleep(2);
+
+  const urlFilter = filterKey ? `?category=${filterKey}` : '';
+
+  const { data } = await productsApi.get<Product[]>('/products' + urlFilter);
+
+  return data
+};
+
+export const getProductById = async (id: number): Promise<Product> => {
+
+  const { data } = await productsApi.get<Product>(`/products/${id}`);
 
   return data
 };
